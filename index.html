@@ -1,26 +1,16 @@
 <!DOCTYPE html>
 
-<html lang="ja">
+<html lang="ja" style="overscroll-behavior:none;overflow-x:hidden;">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ムービーログ">
+<link rel="apple-touch-icon" href="icon.movielog">
 <title>映画記録</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=DM+Mono:wght@300;400&display=swap');
-
-:root {
-–bg: #f5f2ee;
-–surface: #fdfbf8;
-–border: #ddd8d0;
-–text: #2a2520;
-–text-muted: #9e9890;
-–tag-done: #2a2520;
-–tag-watching: #9e9890;
-–tag-theater: #5c4a3a;
-–tag-streaming: #7a8c7a;
-–tag-disc: #6a7a8c;
-–danger: #c0392b;
-}
 
 - { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
@@ -34,178 +24,164 @@ border: none;
 font-family: inherit;
 }
 
-input, textarea, select {
--webkit-appearance: none;
-appearance: none;
-font-family: inherit;
-}
+input, textarea { -webkit-appearance: none; appearance: none; }
 
 body {
-font-family: ‘Noto Serif JP’, ‘Hiragino Mincho ProN’, serif;
-background: var(–bg);
-color: var(–text);
-min-height: 100dvh;
-max-width: 480px;
-margin: 0 auto;
+font-family: ‘Noto Serif JP’, serif;
+background: #f5f2ee;
+color: #2a2520;
+min-height: 100vh;
+padding-bottom: 100px;
+overscroll-behavior: none;
+overflow-x: hidden;
 }
 
-/* ヘッダー */
 header {
-background: var(–surface);
-border-bottom: 1px solid var(–border);
-padding: 16px;
-display: flex;
-align-items: center;
-justify-content: space-between;
+background: #fdfbf8;
+border-bottom: 1px solid #ddd8d0;
+padding: 20px 20px 16px;
 position: sticky;
 top: 0;
 z-index: 10;
 }
 
-header h1 {
-font-size: 18px;
-font-weight: 600;
+header h1 { font-size: 18px; font-weight: 600; letter-spacing: 0.08em; color: #2a2520; }
+
+.header-sub {
+font-family: ‘DM Mono’, monospace;
+font-size: 11px;
+color: #9e9890;
+margin-top: 2px;
 letter-spacing: 0.05em;
 }
 
-.header-actions {
-display: flex;
-gap: 8px;
-align-items: center;
+.header-actions { display: flex; gap: 8px; margin-top: 12px; }
+
+.btn-small {
+font-family: ‘DM Mono’, monospace;
+font-size: 11px;
+letter-spacing: 0.04em;
+padding: 6px 12px;
+border: 1px solid #ddd8d0;
+border-radius: 4px;
+background: #f5f2ee;
+color: #9e9890;
+transition: background 0.15s;
 }
 
-.btn-icon {
-width: 36px;
-height: 36px;
-border-radius: 50%;
-background: var(–bg);
-border: 1px solid var(–border);
-display: flex;
-align-items: center;
-justify-content: center;
-font-size: 16px;
-}
+.btn-small:active { background: #ddd8d0; }
 
-/* フィルター */
 .filter-bar {
-padding: 10px 16px;
+padding: 12px 20px;
 display: flex;
 gap: 8px;
-background: var(–surface);
-border-bottom: 1px solid var(–border);
 overflow-x: auto;
--webkit-overflow-scrolling: touch;
 scrollbar-width: none;
+background: #fdfbf8;
+border-bottom: 1px solid #ddd8d0;
 }
+
 .filter-bar::-webkit-scrollbar { display: none; }
 
 .filter-chip {
+font-family: ‘DM Mono’, monospace;
+font-size: 11px;
 white-space: nowrap;
 padding: 5px 12px;
 border-radius: 20px;
-font-size: 12px;
-border: 1px solid var(–border);
+border: 1px solid #ddd8d0;
 background: transparent;
-color: var(–text-muted);
+color: #9e9890;
 transition: all 0.15s;
 }
+
 .filter-chip.active {
-background: var(–text);
-color: var(–bg);
-border-color: var(–text);
+background: #2a2520;
+color: #fdfbf8;
+border-color: #2a2520;
 }
 
-/* 検索 */
-.search-wrap {
-padding: 10px 16px;
-background: var(–bg);
-}
-.search-input {
-width: 100%;
-background: var(–surface);
-border: 1px solid var(–border);
-border-radius: 20px;
-padding: 8px 16px;
-font-size: 16px;
-color: var(–text);
-outline: none;
-}
-.search-input::placeholder { color: var(–text-muted); }
-
-/* リスト */
-#list-wrap {
-padding: 8px 0;
-}
-
-.movie-item {
-padding: 14px 16px;
-border-bottom: 1px solid var(–border);
-cursor: pointer;
-background: var(–surface);
-margin-bottom: 1px;
+.movie-list {
+padding: 16px 20px;
 display: flex;
-gap: 12px;
-align-items: flex-start;
-}
-.movie-item:active { background: var(–bg); }
-
-.item-main { flex: 1; min-width: 0; }
-
-.item-title {
-font-size: 15px;
-font-weight: 600;
-margin-bottom: 3px;
-white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis;
+flex-direction: column;
+gap: 8px;
 }
 
-.item-director {
-font-size: 12px;
-color: var(–text-muted);
-margin-bottom: 6px;
-white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis;
-}
-
-.item-tags {
-display: flex;
-gap: 6px;
-flex-wrap: wrap;
-}
-
-.tag {
-font-size: 10px;
-padding: 2px 8px;
-border-radius: 10px;
-font-family: ‘DM Mono’, monospace;
-letter-spacing: 0.03em;
-}
-.tag-done { background: var(–tag-done); color: var(–bg); }
-.tag-watching { background: transparent; border: 1px solid var(–text-muted); color: var(–text-muted); }
-.tag-theater { background: var(–tag-theater); color: #f5ede0; }
-.tag-streaming { background: var(–tag-streaming); color: #f0f5f0; }
-.tag-disc { background: var(–tag-disc); color: #eef0f5; }
-.tag-other { background: #8c7a6a; color: #f5f0ea; }
-
-.item-date {
-font-size: 11px;
-color: var(–text-muted);
-font-family: ‘DM Mono’, monospace;
-white-space: nowrap;
-}
-
-/* 空状態 */
 .empty-state {
 text-align: center;
-padding: 60px 24px;
-color: var(–text-muted);
+padding: 60px 20px;
+color: #9e9890;
+font-size: 14px;
+line-height: 2;
 }
-.empty-state .icon { font-size: 40px; margin-bottom: 12px; }
-.empty-state p { font-size: 14px; line-height: 1.8; }
 
-/* FAB */
+.empty-state .big { font-size: 32px; display: block; margin-bottom: 8px; }
+
+.movie-card {
+background: #fdfbf8;
+border: 1px solid #ddd8d0;
+border-radius: 8px;
+padding: 16px;
+cursor: pointer;
+transition: background 0.15s;
+animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(4px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.movie-card:active { background: #f5f2ee; }
+
+.movie-card-top {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+gap: 12px;
+}
+
+.movie-title { font-size: 15px; font-weight: 600; line-height: 1.5; flex: 1; color: #2a2520; }
+
+.movie-tags { display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
+
+.tag {
+font-family: ‘DM Mono’, monospace;
+font-size: 10px;
+padding: 2px 8px;
+border-radius: 3px;
+text-align: center;
+letter-spacing: 0.03em;
+}
+
+.tag-done     { background: #2a2520; color: #fff; }
+.tag-unwatched{ background: #ddd8d0; color: #9e9890; }
+.tag-theater  { background: #5c4a3a; color: #fff; }
+.tag-streaming{ background: #7a8c7a; color: #fff; }
+.tag-disc     { background: #6a7a8c; color: #fff; }
+.tag-other    { background: #8c8070; color: #fff; }
+
+.movie-director { font-size: 12px; color: #9e9890; margin-top: 4px; }
+
+.movie-date {
+font-family: ‘DM Mono’, monospace;
+font-size: 11px;
+color: #9e9890;
+margin-top: 10px;
+}
+
+.movie-review-preview {
+font-size: 12px;
+color: #9e9890;
+margin-top: 8px;
+line-height: 1.6;
+display: -webkit-box;
+-webkit-line-clamp: 2;
+-webkit-box-orient: vertical;
+overflow: hidden;
+}
+
 .fab {
 position: fixed;
 bottom: 24px;
@@ -213,204 +189,209 @@ right: 24px;
 width: 56px;
 height: 56px;
 border-radius: 50%;
-background: var(–text);
-color: var(–bg);
-font-size: 28px;
+background: #2a2520;
+color: #fdfbf8;
+font-size: 24px;
 display: flex;
 align-items: center;
 justify-content: center;
-box-shadow: 0 4px 16px rgba(42,37,32,0.25);
-z-index: 20;
-line-height: 1;
+box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+transition: transform 0.15s;
+z-index: 10;
 }
 
-/* モーダル共通 */
+.fab:active { transform: scale(0.92); }
+
 .modal-overlay {
 display: none;
 position: fixed;
-inset: 0;
-background: rgba(42,37,32,0.5);
-z-index: 100;
+top: 0; left: 0; right: 0; bottom: 0;
+width: 100%;
+height: 100%;
+background: rgba(0,0,0,0.4);
+z-index: 9999;
 align-items: flex-end;
 }
 
-.modal-sheet {
-background: var(–surface);
-border-radius: 20px 20px 0 0;
+.modal-overlay.open { display: flex; }
+
+.modal {
+background: #fdfbf8;
+border-radius: 16px 16px 0 0;
 width: 100%;
-max-height: 92dvh;
-overflow-y: auto;
+max-width: 100vw;
+max-height: 82dvh;
+max-height: 82vh;
+overflow-x: hidden;
+overflow-y: scroll;
 -webkit-overflow-scrolling: touch;
-padding: 20px 20px 40px;
+overscroll-behavior-x: none;
+overscroll-behavior-y: contain;
+padding: 0 0 48px;
+animation: slideUp 0.25s ease;
+position: relative;
+z-index: 10000;
+}
+
+@keyframes slideUp {
+from { transform: translateY(40px); opacity: 0; }
+to { transform: translateY(0); opacity: 1; }
 }
 
 .modal-handle {
-width: 36px;
-height: 4px;
-background: var(–border);
+width: 36px; height: 4px;
+background: #ddd8d0;
 border-radius: 2px;
-margin: 0 auto 20px;
+margin: 12px auto 0;
 }
 
-.modal-title {
-font-size: 17px;
-font-weight: 600;
-margin-bottom: 20px;
-letter-spacing: 0.03em;
+.modal-header {
+padding: 20px 20px 0;
+display: flex;
+justify-content: space-between;
+align-items: center;
 }
 
-/* フォーム */
-.form-field {
-margin-bottom: 18px;
+.modal-title { font-size: 16px; font-weight: 600; letter-spacing: 0.05em; color: #2a2520; }
+
+.modal-close {
+width: 32px; height: 32px;
+background: #f5f2ee;
+border-radius: 50%;
+font-size: 18px;
+display: flex;
+align-items: center;
+justify-content: center;
+color: #9e9890;
 }
 
-.form-label {
-display: block;
-font-size: 11px;
-color: var(–text-muted);
-letter-spacing: 0.08em;
-text-transform: uppercase;
-margin-bottom: 6px;
+.modal-body {
+padding: 20px;
+display: flex;
+flex-direction: column;
+gap: 16px;
+width: 100%;
+box-sizing: border-box;
+}
+
+.field-label {
 font-family: ‘DM Mono’, monospace;
+font-size: 11px;
+letter-spacing: 0.06em;
+color: #9e9890;
+margin-bottom: 6px;
+display: block;
 }
 
-.form-input {
-width: 100%;
-background: var(–bg);
-border: 1px solid var(–border);
-border-radius: 8px;
-padding: 10px 12px;
-font-size: 16px;
-color: var(–text);
-outline: none;
-font-family: ‘Noto Serif JP’, serif;
-}
-.form-input:focus { border-color: var(–text-muted); }
-
-.form-textarea {
-min-height: 100px;
-resize: vertical;
-}
-
-.form-select {
-width: 100%;
-background: var(–bg);
-border: 1px solid var(–border);
-border-radius: 8px;
-padding: 10px 12px;
-font-size: 16px;
-color: var(–text);
-outline: none;
-font-family: ‘Noto Serif JP’, serif;
-}
-
-.radio-group {
+.date-picker {
 display: flex;
 gap: 8px;
 }
-.radio-btn {
+
+.date-picker select {
+-webkit-appearance: none;
+appearance: none;
 flex: 1;
-padding: 9px;
-border: 1px solid var(–border);
-border-radius: 8px;
+font-family: ‘Noto Serif JP’, serif;
+font-size: 14px;
+color: #2a2520;
+background: #f5f2ee;
+border: 1px solid #ddd8d0;
+border-radius: 6px;
+padding: 10px 8px;
+outline: none;
 text-align: center;
+box-sizing: border-box;
+}
+
+.date-picker select:focus { border-color: #2a2520; }
+
+.required-mark { color: #c0392b; margin-left: 3px; }
+
+.modal-body > div { width: 100%; }
+
+textarea {
+-webkit-appearance: none;
+appearance: none;
+width: 100%;
+font-family: ‘Noto Serif JP’, serif;
+font-size: 14px;
+color: #2a2520;
+background: #f5f2ee;
+border: 1px solid #ddd8d0;
+border-radius: 6px;
+padding: 10px 12px;
+outline: none;
+transition: border-color 0.15s;
+display: block;
+box-sizing: border-box;
+-webkit-box-sizing: border-box;
+resize: none;
+min-height: 100px;
+line-height: 1.7;
+}
+
+.input-single {
+min-height: unset;
+height: auto;
+line-height: 1.5;
+overflow: hidden;
+}
+
+.toggle-group {
+display: flex;
+border: 1px solid #ddd8d0;
+border-radius: 6px;
+overflow: hidden;
+}
+
+.toggle-btn {
+flex: 1;
+padding: 9px 0;
+font-family: ‘Noto Serif JP’, serif;
 font-size: 13px;
-background: var(–bg);
-color: var(–text-muted);
+color: #9e9890;
+background: transparent;
 transition: all 0.15s;
+text-align: center;
 }
-.radio-btn.selected {
-background: var(–text);
-color: var(–bg);
-border-color: var(–text);
-}
+
+.toggle-btn:not(:last-child) { border-right: 1px solid #ddd8d0; }
+.toggle-btn.active { background: #2a2520; color: #fdfbf8; }
 
 .btn-primary {
 width: 100%;
-padding: 13px;
-background: var(–text);
-color: var(–bg);
-border-radius: 10px;
-font-size: 15px;
+padding: 14px;
+background: #2a2520;
+color: #fdfbf8;
 font-family: ‘Noto Serif JP’, serif;
+font-size: 15px;
 font-weight: 600;
-margin-top: 8px;
+letter-spacing: 0.06em;
+border-radius: 8px;
+transition: opacity 0.15s;
 }
 
-.btn-small {
-padding: 8px 16px;
-border: 1px solid var(–border);
-border-radius: 8px;
-font-size: 13px;
-background: var(–bg);
-color: var(–text);
-font-family: ‘Noto Serif JP’, serif;
-}
+.btn-primary:active { opacity: 0.8; }
 
 .btn-danger {
-color: var(–danger);
-border-color: var(–danger);
-}
-
-/* 詳細モーダル */
-.detail-title {
-font-size: 20px;
-font-weight: 600;
-margin-bottom: 4px;
-line-height: 1.4;
-}
-.detail-director {
-font-size: 13px;
-color: var(–text-muted);
-margin-bottom: 12px;
-}
-.detail-tags {
-display: flex;
-gap: 6px;
-flex-wrap: wrap;
-margin-bottom: 16px;
-}
-.detail-field {
-margin-bottom: 14px;
-}
-.field-label {
-display: block;
-font-size: 10px;
-color: var(–text-muted);
-letter-spacing: 0.08em;
-text-transform: uppercase;
-margin-bottom: 4px;
-font-family: ‘DM Mono’, monospace;
-}
-.detail-value {
-font-size: 14px;
-line-height: 1.7;
-white-space: pre-wrap;
-}
-
-.detail-actions {
-display: flex;
-gap: 8px;
-margin-top: 16px;
-}
-
-/* メニューモーダル */
-.menu-item {
-display: flex;
-align-items: center;
-gap: 12px;
-padding: 14px 4px;
-border-bottom: 1px solid var(–border);
-font-size: 15px;
-cursor: pointer;
 width: 100%;
-text-align: left;
-background: none;
+padding: 12px;
+background: transparent;
+color: #c0392b;
+border: 1px solid #c0392b;
+border-radius: 8px;
 font-family: ‘Noto Serif JP’, serif;
+font-size: 14px;
+transition: all 0.15s;
 }
-.menu-item:last-child { border-bottom: none; }
-.menu-icon { font-size: 20px; width: 28px; text-align: center; }
-.menu-item.danger { color: var(–danger); }
+
+.btn-danger:active { background: #c0392b; color: #fff; }
+
+.detail-field { border-bottom: 1px solid #ddd8d0; padding-bottom: 16px; }
+.detail-field:last-of-type { border-bottom: none; }
+.detail-value { font-size: 14px; line-height: 1.8; white-space: pre-wrap; margin-top: 4px; color: #2a2520; }
+.detail-tags { display: flex; gap: 6px; flex-wrap: wrap; }
 </style>
 
 </head>
@@ -418,279 +399,278 @@ font-family: ‘Noto Serif JP’, serif;
 
 <header>
   <h1>映画記録</h1>
+  <div class="header-sub" id="totalCount">0 films</div>
   <div class="header-actions">
-    <button class="btn-icon" onclick="openMenu()" title="メニュー">⋯</button>
+    <button class="btn-small" onclick="exportJSON()">↓ エクスポート</button>
+    <button class="btn-small" onclick="document.getElementById('importFile').click()">↑ インポート</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
   </div>
 </header>
 
-<div class="filter-bar" id="filterBar">
-  <button class="filter-chip active" data-filter="all" onclick="setFilter('all',this)">すべて</button>
-  <button class="filter-chip" data-filter="done" onclick="setFilter('done',this)">鑑賞済</button>
-  <button class="filter-chip" data-filter="watching" onclick="setFilter('watching',this)">未鑑賞</button>
-  <button class="filter-chip" data-filter="theater" onclick="setFilter('theater',this)">劇場</button>
-  <button class="filter-chip" data-filter="streaming" onclick="setFilter('streaming',this)">配信</button>
-  <button class="filter-chip" data-filter="disc" onclick="setFilter('disc',this)">円盤</button>
+<div class="filter-bar">
+  <button class="filter-chip active" onclick="setFilter('all',this)">すべて</button>
+  <button class="filter-chip" onclick="setFilter('done',this)">鑑賞済</button>
+  <button class="filter-chip" onclick="setFilter('unwatched',this)">未鑑賞</button>
+  <button class="filter-chip" onclick="setFilter('theater',this)">劇場</button>
+  <button class="filter-chip" onclick="setFilter('streaming',this)">配信</button>
+  <button class="filter-chip" onclick="setFilter('disc',this)">円盤</button>
+  <button class="filter-chip" onclick="setFilter('other',this)">その他</button>
 </div>
 
-<div class="search-wrap">
-  <input class="search-input" type="text" placeholder="タイトル・監督で検索..." id="searchInput" oninput="render()">
-</div>
-
-<div id="list-wrap"></div>
+<div class="movie-list" id="movieList"></div>
 
 <button class="fab" onclick="openAddModal()">＋</button>
 
-<!-- 追加モーダル -->
+<!-- 編集モーダル -->
 
-<div class="modal-overlay" id="addModal">
-  <div class="modal-sheet">
+<div class="modal-overlay" id="editModal" onclick="handleOverlayClick(event,'editModal')">
+  <div class="modal">
     <div class="modal-handle"></div>
-    <div class="modal-title" id="addModalTitle">映画を追加</div>
-
-```
-<div class="form-field">
-  <label class="form-label">タイトル *</label>
-  <input class="form-input" id="f-title" type="text" placeholder="映画タイトル">
-</div>
-<div class="form-field">
-  <label class="form-label">監督</label>
-  <input class="form-input" id="f-director" type="text" placeholder="監督名">
-</div>
-<div class="form-field">
-  <label class="form-label">製作年</label>
-  <input class="form-input" id="f-year" type="number" placeholder="例: 1997" min="1888" max="2099">
-</div>
-<div class="form-field">
-  <label class="form-label">鑑賞方法</label>
-  <div class="radio-group" id="sourceGroup">
-    <button class="radio-btn selected" data-val="theater" onclick="selectRadio('sourceGroup',this)">劇場</button>
-    <button class="radio-btn" data-val="streaming" onclick="selectRadio('sourceGroup',this)">配信</button>
-    <button class="radio-btn" data-val="disc" onclick="selectRadio('sourceGroup',this)">円盤</button>
-    <button class="radio-btn" data-val="other" onclick="selectRadio('sourceGroup',this)">その他</button>
-  </div>
-</div>
-<div class="form-field">
-  <label class="form-label">ステータス</label>
-  <div class="radio-group" id="statusGroup">
-    <button class="radio-btn selected" data-val="done" onclick="selectRadio('statusGroup',this)">鑑賞済</button>
-    <button class="radio-btn" data-val="watching" onclick="selectRadio('statusGroup',this)">未鑑賞</button>
-  </div>
-</div>
-<div class="form-field">
-  <label class="form-label">鑑賞日</label>
-  <input class="form-input" id="f-date" type="date">
-</div>
-<div class="form-field">
-  <label class="form-label">感想・メモ</label>
-  <textarea class="form-input form-textarea" id="f-review" placeholder="感想、印象に残ったシーン、メモなど"></textarea>
-</div>
-
-<button class="btn-primary" id="addSubmitBtn" onclick="submitAdd()">追加する</button>
-<button class="btn-small" style="width:100%;margin-top:10px;text-align:center;" onclick="closeModal('addModal')">キャンセル</button>
-```
-
+    <div class="modal-header">
+      <span class="modal-title" id="editModalTitle">新しい映画</span>
+      <button class="modal-close" onclick="closeEditModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <label class="field-label">タイトル <span class="required-mark">*</span></label>
+        <textarea id="inputTitle" placeholder="映画タイトル" rows="1" class="input-single"></textarea>
+      </div>
+      <div>
+        <label class="field-label">監督</label>
+        <textarea id="inputDirector" placeholder="監督名" rows="1" class="input-single"></textarea>
+      </div>
+      <div>
+        <label class="field-label">鑑賞日</label>
+        <input type="date" id="inputDate" style="width:100%;font-family:'Noto Serif JP',serif;font-size:14px;color:#2a2520;background:#f5f2ee;border:1px solid #ddd8d0;border-radius:6px;padding:10px 12px;outline:none;display:block;box-sizing:border-box;color-scheme:light;">
+      </div>
+      <div>
+        <label class="field-label">鑑賞状況</label>
+        <div class="toggle-group">
+          <button class="toggle-btn active" id="btnDone" onclick="setStatus('done')">鑑賞済</button>
+          <button class="toggle-btn" id="btnUnwatched" onclick="setStatus('unwatched')">未鑑賞</button>
+        </div>
+      </div>
+      <div>
+        <label class="field-label">鑑賞方法</label>
+        <div class="toggle-group">
+          <button class="toggle-btn active" id="btnTheater" onclick="setSource('theater')">劇場</button>
+          <button class="toggle-btn" id="btnStreaming" onclick="setSource('streaming')">配信</button>
+          <button class="toggle-btn" id="btnDisc" onclick="setSource('disc')">円盤</button>
+          <button class="toggle-btn" id="btnOther" onclick="setSource('other')">その他</button>
+        </div>
+      </div>
+      <div>
+        <label class="field-label">感想・メモ</label>
+        <textarea id="inputReview" placeholder="感想、印象に残ったシーン、メモなど…"></textarea>
+      </div>
+      <button class="btn-primary" onclick="saveMovie()">保存する</button>
+      <button class="btn-danger" id="deleteBtn" style="display:none" onclick="deleteMovie()">この記録を削除する</button>
+    </div>
   </div>
 </div>
 
 <!-- 詳細モーダル -->
 
-<div class="modal-overlay" id="detailModal">
-  <div class="modal-sheet">
+<div class="modal-overlay" id="detailModal" onclick="handleOverlayClick(event,'detailModal')">
+  <div class="modal">
     <div class="modal-handle"></div>
-    <div id="detailContent"></div>
-  </div>
-</div>
-
-<!-- メニューモーダル -->
-
-<div class="modal-overlay" id="menuModal">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-title">メニュー</div>
-    <button class="menu-item" onclick="exportJSON()">
-      <span class="menu-icon">↑</span> JSONエクスポート
-    </button>
-    <label class="menu-item" style="cursor:pointer;">
-      <span class="menu-icon">↓</span> JSONインポート
-      <input type="file" accept=".json" onchange="importJSON(event)" style="display:none">
-    </label>
-    <button class="menu-item danger" onclick="confirmClearAll()">
-      <span class="menu-icon">✕</span> すべて削除
-    </button>
-    <button class="btn-small" style="width:100%;margin-top:16px;text-align:center;" onclick="closeModal('menuModal')">閉じる</button>
+    <div class="modal-header">
+      <span class="modal-title">詳細</span>
+      <button class="modal-close" onclick="closeDetailModal()">×</button>
+    </div>
+    <div class="modal-body" id="detailBody"></div>
   </div>
 </div>
 
 <script>
-  const STORAGE_KEY = 'movie_log_v1';
-  let movies = [];
+  let movies = JSON.parse(localStorage.getItem('movies_log') || '[]');
   let currentFilter = 'all';
   let editingId = null;
+  let currentStatus = 'done';
+  let currentSource = 'theater';
 
-  function load() {
-    try { movies = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { movies = []; }
-  }
-  function save() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(movies));
-  }
-  function esc(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  function save() { localStorage.setItem('movies_log', JSON.stringify(movies)); }
+
+  function handleOverlayClick(e, modalId) {
+    if (e.target === document.getElementById(modalId)) {
+      if (modalId === 'editModal') closeEditModal();
+      else closeDetailModal();
+    }
   }
 
-  load();
-
-  // モーダル
   function openModal(id) {
-    document.getElementById(id).style.display = 'flex';
+    const el = document.getElementById(id);
+    el.style.display = 'flex';
+    requestAnimationFrame(() => el.classList.add('open'));
     document.body.style.overflow = 'hidden';
   }
+
   function closeModal(id) {
-    document.getElementById(id).style.display = 'none';
+    const el = document.getElementById(id);
+    el.classList.remove('open');
+    el.style.display = 'none';
     document.body.style.overflow = '';
   }
 
-  // オーバーレイクリックで閉じる
-  ['addModal','detailModal','menuModal'].forEach(id => {
-    document.getElementById(id).addEventListener('click', function(e) {
-      if (e.target === this) closeModal(id);
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  const sourceLabel = { theater:'劇場', streaming:'配信', disc:'円盤', other:'その他' };
+  const sourceClass = { theater:'tag-theater', streaming:'tag-streaming', disc:'tag-disc', other:'tag-other' };
+
+  function getFiltered() {
+    if (currentFilter === 'all') return movies;
+    if (currentFilter === 'done') return movies.filter(m => m.status === 'done');
+    if (currentFilter === 'unwatched') return movies.filter(m => m.status === 'unwatched');
+    return movies.filter(m => m.source === currentFilter);
+  }
+
+  function render() {
+    const list = document.getElementById('movieList');
+    const filtered = getFiltered();
+    document.getElementById('totalCount').textContent = movies.length + ' films';
+
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="empty-state">
+        <span class="big">🎬</span>
+        ${movies.length === 0 ? '＋ボタンで最初の一本を記録しよう' : 'この条件の映画はまだない'}
+      </div>`;
+      return;
+    }
+
+    const sorted = [...filtered].sort((a, b) => {
+      if (!a.date && !b.date) return 0;
+      if (!a.date) return 1;
+      if (!b.date) return -1;
+      return b.date.localeCompare(a.date);
     });
-  });
 
-  // ラジオボタン
-  function selectRadio(groupId, btn) {
-    document.querySelectorAll(`#${groupId} .radio-btn`).forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-  }
-  function getRadioVal(groupId) {
-    const sel = document.querySelector(`#${groupId} .radio-btn.selected`);
-    return sel ? sel.dataset.val : '';
+    list.innerHTML = sorted.map(m => `
+      <div class="movie-card" onclick="openDetail('${m.id}')">
+        <div class="movie-card-top">
+          <div style="flex:1">
+            <div class="movie-title">${esc(m.title)}</div>
+            ${m.director ? `<div class="movie-director">${esc(m.director)}</div>` : ''}
+          </div>
+          <div class="movie-tags">
+            <span class="tag ${m.status==='done'?'tag-done':'tag-unwatched'}">${m.status==='done'?'鑑賞済':'未鑑賞'}</span>
+            <span class="tag ${sourceClass[m.source]||'tag-other'}">${sourceLabel[m.source]||'その他'}</span>
+          </div>
+        </div>
+        ${m.date ? `<div class="movie-date">${m.date}</div>` : ''}
+        ${m.review ? `<div class="movie-review-preview">${esc(m.review)}</div>` : ''}
+      </div>
+    `).join('');
   }
 
-  // フィルター
-  function setFilter(val, el) {
-    currentFilter = val;
+  function setFilter(filter, el) {
+    currentFilter = filter;
     document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
     el.classList.add('active');
     render();
   }
 
-  // レンダリング
-  function render() {
-    const query = (document.getElementById('searchInput').value || '').toLowerCase();
-    let filtered = movies.filter(m => {
-      const matchSearch = !query ||
-        m.title.toLowerCase().includes(query) ||
-        (m.director || '').toLowerCase().includes(query);
-      const matchFilter = currentFilter === 'all' ? true :
-        currentFilter === 'done' ? m.status === 'done' :
-        currentFilter === 'watching' ? m.status === 'watching' :
-        m.source === currentFilter;
-      return matchSearch && matchFilter;
-    });
-
-    // 新しい順
-    filtered = filtered.slice().sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
-
-    const wrap = document.getElementById('list-wrap');
-    if (filtered.length === 0) {
-      wrap.innerHTML = `<div class="empty-state">
-        <div class="icon">🎬</div>
-        <p>まだ記録がない<br>＋ボタンで追加しよう</p>
-      </div>`;
-      return;
-    }
-
-    wrap.innerHTML = filtered.map(m => {
-      const sourceLabel = {theater:'劇場',streaming:'配信',disc:'円盤',other:'その他'}[m.source] || m.source;
-      const sourceClass = {theater:'tag-theater',streaming:'tag-streaming',disc:'tag-disc',other:'tag-other'}[m.source] || 'tag-other';
-      return `<div class="movie-item" onclick="openDetail('${m.id}')">
-        <div class="item-main">
-          <div class="item-title">${esc(m.title)}${m.year ? ` <span style="font-weight:300;font-size:12px;color:var(--text-muted)">(${m.year})</span>` : ''}</div>
-          ${m.director ? `<div class="item-director">${esc(m.director)}</div>` : '<div style="height:4px"></div>'}
-          <div class="item-tags">
-            <span class="tag ${m.status==='done'?'tag-done':'tag-watching'}">${m.status==='done'?'鑑賞済':'未鑑賞'}</span>
-            <span class="tag ${sourceClass}">${sourceLabel}</span>
-          </div>
-        </div>
-        <div class="item-date">${m.date || ''}</div>
-      </div>`;
-    }).join('');
-  }
-
-  // 追加モーダルを開く
   function openAddModal() {
     editingId = null;
-    document.getElementById('addModalTitle').textContent = '映画を追加';
-    document.getElementById('addSubmitBtn').textContent = '追加する';
-    document.getElementById('f-title').value = '';
-    document.getElementById('f-director').value = '';
-    document.getElementById('f-year').value = '';
-    document.getElementById('f-date').value = '';
-    document.getElementById('f-review').value = '';
-    // ラジオリセット
-    document.querySelectorAll('#sourceGroup .radio-btn').forEach((b,i) => b.classList.toggle('selected', i===0));
-    document.querySelectorAll('#statusGroup .radio-btn').forEach((b,i) => b.classList.toggle('selected', i===0));
-    openModal('addModal');
-    setTimeout(() => document.getElementById('f-title').focus(), 100);
+    currentStatus = 'done';
+    currentSource = 'theater';
+    document.getElementById('editModalTitle').textContent = '新しい映画';
+    document.getElementById('inputTitle').value = '';
+    document.getElementById('inputDirector').value = '';
+    document.getElementById('inputDate').value = '';
+    document.getElementById('inputReview').value = '';
+    document.getElementById('deleteBtn').style.display = 'none';
+    updateStatusUI();
+    updateSourceUI();
+    openModal('editModal');
   }
 
-  // 編集モーダルを開く
   function openEditModal(id) {
     const m = movies.find(x => x.id === id);
     if (!m) return;
     editingId = id;
-    closeModal('detailModal');
-    document.getElementById('addModalTitle').textContent = '編集';
-    document.getElementById('addSubmitBtn').textContent = '保存する';
-    document.getElementById('f-title').value = m.title || '';
-    document.getElementById('f-director').value = m.director || '';
-    document.getElementById('f-year').value = m.year || '';
-    document.getElementById('f-date').value = m.date || '';
-    document.getElementById('f-review').value = m.review || '';
-    // ラジオ復元
-    document.querySelectorAll('#sourceGroup .radio-btn').forEach(b => b.classList.toggle('selected', b.dataset.val === m.source));
-    document.querySelectorAll('#statusGroup .radio-btn').forEach(b => b.classList.toggle('selected', b.dataset.val === m.status));
-    openModal('addModal');
+    currentStatus = m.status || 'done';
+    currentSource = m.source || 'theater';
+    document.getElementById('editModalTitle').textContent = '編集';
+    document.getElementById('inputTitle').value = m.title;
+    document.getElementById('inputDirector').value = m.director || '';
+    document.getElementById('inputDate').value = m.date || '';
+    document.getElementById('inputReview').value = m.review || '';
+    document.getElementById('deleteBtn').style.display = 'block';
+    updateStatusUI();
+    updateSourceUI();
+    closeDetailModal();
+    openModal('editModal');
   }
 
-  // 追加/更新
-  function submitAdd() {
-    const title = document.getElementById('f-title').value.trim();
-    if (!title) { alert('タイトルは必須'); return; }
-    const data = {
+  function closeEditModal() { closeModal('editModal'); }
+
+  function setStatus(s) { currentStatus = s; updateStatusUI(); }
+  function setSource(s) { currentSource = s; updateSourceUI(); }
+
+  function updateStatusUI() {
+    document.getElementById('btnDone').classList.toggle('active', currentStatus === 'done');
+    document.getElementById('btnUnwatched').classList.toggle('active', currentStatus === 'unwatched');
+  }
+
+  function updateSourceUI() {
+    ['theater','streaming','disc','other'].forEach(s => {
+      document.getElementById('btn' + s.charAt(0).toUpperCase() + s.slice(1))
+        .classList.toggle('active', currentSource === s);
+    });
+  }
+
+  function saveMovie() {
+    const title = document.getElementById('inputTitle').value.trim().replace(/\n/g, '');
+    if (!title) {
+      const el = document.getElementById('inputTitle');
+      el.focus();
+      el.style.borderColor = '#c0392b';
+      setTimeout(() => el.style.borderColor = '', 1500);
+      return;
+    }
+    const movie = {
+      id: editingId || Date.now().toString(),
       title,
-      director: document.getElementById('f-director').value.trim(),
-      year: document.getElementById('f-year').value.trim(),
-      source: getRadioVal('sourceGroup'),
-      status: getRadioVal('statusGroup'),
-      date: document.getElementById('f-date').value,
-      review: document.getElementById('f-review').value.trim(),
+      director: document.getElementById('inputDirector').value.trim().replace(/\n/g, ''),
+      date: document.getElementById('inputDate').value,
+      status: currentStatus,
+      source: currentSource,
+      review: document.getElementById('inputReview').value.trim(),
+      updatedAt: new Date().toISOString()
     };
     if (editingId) {
       const idx = movies.findIndex(m => m.id === editingId);
-      if (idx !== -1) movies[idx] = { ...movies[idx], ...data };
+      if (idx !== -1) movies[idx] = movie;
     } else {
-      data.id = Date.now().toString(36) + Math.random().toString(36).slice(2,6);
-      data.createdAt = Date.now();
-      movies.unshift(data);
+      movies.unshift(movie);
     }
     save();
     render();
-    closeModal('addModal');
+    closeEditModal();
   }
 
-  // 詳細
+  function deleteMovie() {
+    if (!editingId) return;
+    if (!confirm('この記録を削除する？')) return;
+    movies = movies.filter(m => m.id !== editingId);
+    save();
+    render();
+    closeEditModal();
+  }
+
   function openDetail(id) {
     const m = movies.find(x => x.id === id);
     if (!m) return;
-    const sourceLabel = {theater:'劇場',streaming:'配信',disc:'円盤',other:'その他'}[m.source] || m.source;
-    const sourceClass = {theater:'tag-theater',streaming:'tag-streaming',disc:'tag-disc',other:'tag-other'}[m.source] || 'tag-other';
-    document.getElementById('detailContent').innerHTML = `
-      <div class="detail-title">${esc(m.title)}${m.year ? ` <span style="font-weight:300;font-size:14px;color:var(--text-muted)">(${m.year})</span>` : ''}</div>
-      ${m.director ? `<div class="detail-director">監督：${esc(m.director)}</div>` : ''}
+    document.getElementById('detailBody').innerHTML = `
+      <div>
+        <h2 style="font-size:18px;font-weight:600;line-height:1.6;color:#2a2520">${esc(m.title)}</h2>
+        ${m.director ? `<p style="font-size:13px;color:#9e9890;margin-top:4px">${esc(m.director)}</p>` : ''}
+      </div>
       <div class="detail-tags">
-        <span class="tag ${m.status==='done'?'tag-done':'tag-watching'}">${m.status==='done'?'鑑賞済':'未鑑賞'}</span>
-        <span class="tag ${sourceClass}">${sourceLabel}</span>
+        <span class="tag ${m.status==='done'?'tag-done':'tag-unwatched'}">${m.status==='done'?'鑑賞済':'未鑑賞'}</span>
+        <span class="tag ${sourceClass[m.source]||'tag-other'}">${sourceLabel[m.source]||'その他'}</span>
       </div>
       ${m.date ? `<div class="detail-field">
         <span class="field-label">鑑賞日</span>
@@ -700,27 +680,13 @@ font-family: ‘Noto Serif JP’, serif;
         <span class="field-label">感想・メモ</span>
         <div class="detail-value">${esc(m.review)}</div>
       </div>` : ''}
-      <div class="detail-actions">
-        <button class="btn-small" style="flex:1;text-align:center" onclick="openEditModal('${m.id}')">編集</button>
-        <button class="btn-small btn-danger" style="flex:1;text-align:center" onclick="deleteMovie('${m.id}')">削除</button>
-      </div>
+      <button class="btn-small" style="width:100%;padding:10px;text-align:center;color:#2a2520" onclick="openEditModal('${m.id}')">編集する</button>
     `;
     openModal('detailModal');
   }
 
-  // 削除
-  function deleteMovie(id) {
-    if (!confirm('この記録を削除する？')) return;
-    movies = movies.filter(m => m.id !== id);
-    save();
-    render();
-    closeModal('detailModal');
-  }
+  function closeDetailModal() { closeModal('detailModal'); }
 
-  // メニュー
-  function openMenu() { openModal('menuModal'); }
-
-  // エクスポート
   function exportJSON() {
     if (movies.length === 0) { alert('記録がまだない'); return; }
     const blob = new Blob([JSON.stringify(movies, null, 2)], { type: 'application/json' });
@@ -730,10 +696,8 @@ font-family: ‘Noto Serif JP’, serif;
     a.download = 'movies_' + new Date().toISOString().split('T')[0] + '.json';
     a.click();
     URL.revokeObjectURL(url);
-    closeModal('menuModal');
   }
 
-  // インポート
   function importJSON(e) {
     const file = e.target.files[0];
     if (!file) return;
@@ -749,7 +713,6 @@ font-family: ‘Noto Serif JP’, serif;
         save();
         render();
         alert(newMovies.length + '件追加した');
-        closeModal('menuModal');
       } catch {
         alert('読み込みに失敗した。正しいJSONファイルか確認して');
       }
@@ -758,16 +721,13 @@ font-family: ‘Noto Serif JP’, serif;
     e.target.value = '';
   }
 
-  // 全削除
-  function confirmClearAll() {
-    if (!confirm('全データを削除する？この操作は元に戻せない。')) return;
-    movies = [];
-    save();
-    render();
-    closeModal('menuModal');
-  }
-
   render();
+
+  ['inputTitle', 'inputDirector'].forEach(function(id) {
+    document.getElementById(id).addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') e.preventDefault();
+    });
+  });
 </script>
 
 </body>
